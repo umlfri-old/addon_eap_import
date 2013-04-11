@@ -19,7 +19,8 @@ class Convertor:
         self.aVyhladavac = Vyhladavac ()
         self.aVyhladavac.connect_db (paFile)
         self.read ()
-        self.write ()
+        if paAdapter is not None:
+            self.write ()
 
 
     def _choose(self, paList, paName):
@@ -60,7 +61,5 @@ class Convertor:
         self.aRoot.write (self.adapter.project.root,
                           self.adapter.project.metamodel)
 
-"""
 if __name__ == "__main__":
-    c = Convertor (None, os.path.realpath ("..\\Projekt.eap"))
-"""
+    c = Convertor (None, os.path.realpath ("d:/temp/model.eap"))
