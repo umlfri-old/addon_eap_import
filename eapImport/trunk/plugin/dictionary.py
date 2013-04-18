@@ -2,11 +2,11 @@
 class Dictionary:
 
     DIAGRAM_TYPE = {
-        "Use Case diagram",
-        "Object diagram",
-        "Class diagram",
-        "Activity diagram",
-        "State diagram"
+        "Use Case":"Use Case diagram",
+        "Object":"Object diagram",
+        "Logical":"Class diagram",
+        "Activity":"Activity diagram",
+        "Statechart":"State diagram"
     }
 
 
