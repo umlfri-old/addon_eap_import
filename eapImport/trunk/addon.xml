@@ -2,7 +2,7 @@
 <AddOn xmlns="http://umlfri.org/xmlschema/addon.xsd">
     <Identity uri="urn:umlfri.org:plugin:eapImport" />
 
-    <FriendlyName name="Eap Importer" version="0.2.1" />
+    <FriendlyName name="Eap Importer" version="0.2.26" />
     <Author>
         <Name name="Michal Petrovič" />
         <Homepage url="http://umlfri.org" />

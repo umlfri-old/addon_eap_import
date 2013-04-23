@@ -3,7 +3,7 @@ from comtypes.client import *
 
 
 
-class Vyhladavac:
+class ComtypesReader:
     def __init__(self):
         self.aCOM_object = CreateObject ("DAO.DBEngine.36")
 
@@ -64,18 +64,4 @@ class Vyhladavac:
                 return x
 
 
-"""
-vyhladavac=Vyhladavac()
-eap=os.path.abspath("Projekt.EAP")
-vyhladavac.connectDB(eap)
-print vyhladavac.getNumRows("t_object")
-print vyhladavac.getOneItem("t_object","name","Object_ID=3")
-print vyhladavac.getOneItem("t_object","name","Object_ID=1")
-
-tab=vyhladavac.getTable("t_object")
-for x in range(len(tab)):
-    for y in range(len(tab[0])):
-        print unicode(tab[x][y])+", ",
-    print ""
-"""
 
