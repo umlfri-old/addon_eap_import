@@ -1,15 +1,15 @@
 #coding=utf-8
 from comtypesReader import *
 
-class TableStore:
 
+class TableStore:
     TABLES=(
         "t_package",
         "t_diagram",
         "t_object"
     )
 
-    def __init__(self,filepath):
+    def __init__(self, filepath):
         self.reader=ComtypesReader()
         self.reader.connect_db(filepath)
         self.loaded_tables={}

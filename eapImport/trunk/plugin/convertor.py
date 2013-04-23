@@ -1,8 +1,8 @@
 #coding=utf-8
+import os
+
 from element import *
 from tableStore import *
-from dictionary import *
-import os
 
 
 class Convertor:
@@ -26,10 +26,11 @@ class Convertor:
         sorted_table=sorted(t_package, key=lambda a: a[2])
 
         for a in sorted_table:
-            if a[2]==0:
+            if a[2] == 0:
                 self.aRoot=Element(sorted_table[0][0], sorted_table[0][2],
-                           pa_type=Dictionary.ELEMENT_TYPE["Package"],
-                           pa_name=sorted_table[0][1])
+                                   pa_type=Dictionary.ELEMENT_TYPE[
+                                       ("Package", 0)],
+                                   pa_name=sorted_table[0][1])
                 break
 
         self.aRoot.read(self.stored_tables)
