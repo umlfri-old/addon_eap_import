@@ -1,7 +1,7 @@
 #coding=utf-8
-from element import Element
-from vyhladavac import Vyhladavac
-from dictionary import Dictionary
+from element import *
+from tableStore import *
+from dictionary import *
 import os
 
 
@@ -9,8 +9,7 @@ class Convertor:
     def __init__(self, paAdapter, paFile):
         self.adapter=paAdapter
         self.aSourceFile=paFile
-        self.aVyhladavac=Vyhladavac()
-        self.aVyhladavac.connect_db(paFile)
+        self.stored_tables=TableStore(paFile)
         self.read()
         if paAdapter is not None:
             self.write()
@@ -23,15 +22,17 @@ class Convertor:
 
 
     def read(self):
-        result=self.aVyhladavac.get_items("t_package",
-                                          "Package_ID,Parent_ID,Name",
-                                          "Parent_ID=0")
+        t_package=self.stored_tables.loaded_tables['t_package']
+        sorted_table=sorted(t_package, key=lambda a: a[2])
 
-        self.aRoot=Element(result[0][0], result[0][1],
+        for a in sorted_table:
+            if a[2]==0:
+                self.aRoot=Element(sorted_table[0][0], sorted_table[0][2],
                            pa_type=Dictionary.ELEMENT_TYPE["Package"],
-                           pa_name=result[0][2])
+                           pa_name=sorted_table[0][1])
+                break
 
-        self.aRoot.read(self.aVyhladavac)
+        self.aRoot.read(self.stored_tables)
 
     def write(self):
         self._choose(self.adapter.templates,

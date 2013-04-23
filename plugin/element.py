@@ -18,32 +18,32 @@ class Element:
         self.object_ID=pa_object
 
 
-    def read(self, pa_vyhladavac):
-        self.vyhladavac=pa_vyhladavac
+    def read(self, pa_table_store):
+        self.stored_tables=pa_table_store
         self._read_packages()
         self._read_diagrams()
 
 
     def _read_packages(self):
-        result=self.vyhladavac.get_items("t_object o",
-                                         "Val(o.PDATA1),Package_ID,Object_ID,Object_Type,Name",
-                                         "Package_ID=%d and (Not IsNull(o.PDATA1)) and Object_Type='Package'" % self.package_ID)
-        if len(result) != 0:
-            for a in result:
-                new_package=Element(a[0], a[1], a[2],
-                                    Dictionary.ELEMENT_TYPE[a[3]], a[4])
-                print "read package " + a[4]
-                new_package.read(self.vyhladavac)
+        t_object=self.stored_tables.loaded_tables['t_object']
+        filtered_table=filter(lambda a: (
+        (a[24] != None) and (a[1] == 'Package') and (a[8] == self.package_ID)),
+                              t_object)
+        if len(filtered_table) != 0:
+            for a in filtered_table:
+                new_package=Element(int(a[24]), a[8], a[0],
+                                    Dictionary.ELEMENT_TYPE[a[1]], a[3])
+                print "read package " + a[3]
+                new_package.read(self.stored_tables)
                 self.childrens.append(new_package)
 
 
     def _read_diagrams(self):
-        result=self.vyhladavac.get_items("t_diagram",
-                                         "Diagram_ID,Package_ID,ParentID,Diagram_Type,Name",
-                                         "Package_ID=%d and ParentID=0" % self.package_ID)
-
-        if len(result) != 0:
-            for a in result:
+        t_diagram=self.stored_tables.loaded_tables['t_diagram']
+        filtered_table=filter(
+            lambda a: ((a[2] == 0) and (a[1] == self.package_ID)), t_diagram)
+        if len(filtered_table) != 0:
+            for a in filtered_table:
 
                 try:
                     new_diagram=Diagram(a[0], a[1], a[2],
@@ -78,7 +78,7 @@ class Element:
             new_diagram=self.reference.create_diagram(
                 self.metamodel.diagrams[a.type])
             new_diagram.values['name']=a.name
-#            a.write(new_diagram, self.metamodel)
+        #            a.write(new_diagram, self.metamodel)
 
 
     def _choose(self, paList, paName):

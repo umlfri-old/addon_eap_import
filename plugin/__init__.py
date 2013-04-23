@@ -1,1 +1,1 @@
-__all__ = ["convertor", "vyhladavac","element","diagram","dictionary"]
+__all__ = ["convertor","element","diagram","dictionary","comtypesReader","tableStore","plugin"]
