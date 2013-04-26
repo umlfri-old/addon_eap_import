@@ -1,4 +1,5 @@
 #coding=utf-8
+__author__='Michal Petrovič'
 from comtypes.client import *
 
 

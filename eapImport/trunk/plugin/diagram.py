@@ -1,4 +1,5 @@
 #coding=utf-8
+__author__='Michal Petrovič'
 class Diagram:
     def __init__(self, pa_diagram=None, pa_parent_package=None,
                  pa_parent_element=None, pa_type=None, pa_name=None):
