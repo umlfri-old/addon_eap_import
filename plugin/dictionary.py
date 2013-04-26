@@ -1,4 +1,5 @@
 #coding=utf-8
+__author__='Michal Petrovič'
 class Dictionary:
     DIAGRAM_TYPE={
         "Use Case": "Use Case diagram",

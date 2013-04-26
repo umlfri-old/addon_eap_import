@@ -1,4 +1,5 @@
 #coding=utf-8
+__author__='Michal Petrovič'
 import os
 
 from element import *
@@ -22,7 +23,7 @@ class Convertor:
 
 
     def read(self):
-        t_package=self.stored_tables.loaded_tables['t_package']
+        t_package=self.stored_tables.get_table('t_package')
         sorted_table=sorted(t_package, key=lambda a: a[2])
 
         for a in sorted_table:
