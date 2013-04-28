@@ -30,7 +30,7 @@ class Attribute:
         self.object_id=pa_object_id
         self.attribute_id=pa_attribute_id
         self.position=pa_position
-        self.loaded_properties={}
+        self.values={}
 
     def read(self,pa_table_store):
         self.stored_tables=pa_table_store
@@ -50,14 +50,13 @@ class Attribute:
                     value=filtered_table[a[1]]
                 else:
                     value=a[2][filtered_table[a[1]]]
-
-                print "read atribute property: "+str(a)+" = "+str(value)
-                self.loaded_properties[a[0]]=value
+                print "read atribute property: "+str(a[0])+" = "+str(value)
+                self.values[a[0]]=value
             except KeyError:
                 print "Value "+str(value)+" for: "+a[0]+" is not supported!"
                 continue
 
     def _write_properties(self):
-        for a in self.loaded_properties:
-            print "write attribute property:" +a+" = "+(self.loaded_properties[a] or '')
-            self.reference.values['attributes['+str(self.position)+'].'+a]=(self.loaded_properties[a] or '')
+        for a in self.values:
+            print "write attribute property:" +a+" = "+(self.values[a] or '')
+            self.reference.values['attributes['+str(self.position)+'].'+a]=(self.values[a] or '')
