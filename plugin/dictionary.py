@@ -1,6 +1,7 @@
 #coding=utf-8
 __author__='Michal Petrovič'
 class Dictionary:
+
     DIAGRAM_TYPE={
         "Use Case": "Use Case diagram",
         "Object": "Object diagram",
@@ -11,6 +12,9 @@ class Dictionary:
 
     ELEMENT_TYPE={
         ("StateNode", 100): "StartState",
+        ("StateNode", 3): "StartState",
+        ("StateNode", 101): "EndState",
+        ("StateNode", 4): "EndState",
         ("Package", 0): "Package",
         ("Decision", 0): "Decision",
         ("Object", 0): "Object",
@@ -25,7 +29,8 @@ class Dictionary:
         ("Activity", 0): "Activity",
         ("Interface", 0): "Interface",
         ("Boundary", 0): "Boundary",
-        ("StateNode", 101): "EndState"
+        ("StateNode", 101): "EndState",
+        ("StateMachine",8):"State"
     }
 
     CONNECTION_TYPE={
