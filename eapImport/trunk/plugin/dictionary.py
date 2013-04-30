@@ -34,17 +34,17 @@ class Dictionary:
     }
 
     CONNECTION_TYPE={
-        "Compose",
-        "Note Link",
-        "Extend",
-        "Implementation",
-        "Generalization",
-        "Dependency",
-        "Control Flow",
-        "AssociationInstance",
-        "StateTransition",
-        "Include",
-        "AssociationUseCase",
-        "Association",
-        "Agregation"
+        ("NoteLink",None):"Note Link",
+        ("Realisation",None):"Implementation",
+        ("Generalization",None):"Generalization",
+        ("Dependency",None):"Dependency",
+        ("ControlFlow",None):"Control Flow",
+        ("StateFlow",None):"StateTransition",
+        ("UseCase","Includes"):"Include",
+        ("UseCase","Extends"):"Extend",
+        ("UseCase",None):"AssociationUseCase",
+        #None:"AssociationInstance",
+        ("Association",None):"Association",
+        ("Aggregation","Weak"):"Agregation",
+        ("Aggregation","Strong"):"Compose"
     }
