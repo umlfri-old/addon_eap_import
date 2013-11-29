@@ -15,6 +15,7 @@ class Dictionary:
         ("StateNode", 3): "StartState",
         ("StateNode", 101): "EndState",
         ("StateNode", 4): "EndState",
+        ("StateNode", 11): "Decision",
         ("Package", 0): "Package",
         ("Decision", 0): "Decision",
         ("Object", 0): "Object",
@@ -30,6 +31,7 @@ class Dictionary:
         ("Interface", 0): "Interface",
         ("Boundary", 0): "Boundary",
         ("StateNode", 101): "EndState",
+        ("StateMachine",0):"State",
         ("StateMachine",8):"State"
     }
 
