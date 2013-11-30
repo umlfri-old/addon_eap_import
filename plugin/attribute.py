@@ -1,6 +1,8 @@
 #coding=utf-8
 __author__='Michal Petrovič'
 
+import re
+
 
 class Attribute:
 
@@ -8,7 +10,7 @@ class Attribute:
         ("name",1),
         ("stereotype",3),
         ("default",23),
-        ("note",12),
+        ("note",12,lambda x:re.sub("<(.*?)>",'',x or "")),
         ("static",5,
          {
              0:"False",
@@ -48,8 +50,11 @@ class Attribute:
             try:
                 if len(a) == 2:
                     value=filtered_table[a[1]]
-                else:
+                elif len(a)==3 and callable(a[2]):
+                    value=a[2](filtered_table[a[1]])
+                elif len(a)==3 and not callable(a[2]):
                     value=a[2][filtered_table[a[1]]]
+
                 print "read atribute property: "+str(a[0])+" = "+str(value)
                 self.values[a[0]]=value
             except KeyError:

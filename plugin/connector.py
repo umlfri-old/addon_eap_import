@@ -1,12 +1,14 @@
 #coding=utf-8
 __author__='Michal Petrovič'
 
+import re
+
 
 class Connector:
     PROPERTIES=(
         ("name", 1),
         ("stereotype", 46),
-        ("note", 3),
+        ("note", 3,lambda x:re.sub("<(.*?)>",'',x or "")),
         ("direction", 2,
          {
              "Unspecified":"Unspecified",
@@ -48,8 +50,11 @@ class Connector:
             try:
                 if len(a) == 2:
                     value=filtered_table[a[1]]
-                else:
+                elif len(a)==3 and callable(a[2]):
+                    value=a[2](filtered_table[a[1]])
+                elif len(a)==3 and not callable(a[2]):
                     value=a[2][filtered_table[a[1]]]
+
                 print "read connector property: " + str(a[0]) + " = " + str(value)
                 self.values[a[0]]=value
             except KeyError:

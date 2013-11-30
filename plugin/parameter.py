@@ -1,12 +1,15 @@
 #coding=utf-8
 __author__='Michal Petrovič'
 
+import re
+
+
 class Parameter:
 
     PROPERTIES=(
         ("name",1),
         ("default",3),
-        ("note",4),
+        ("note",4,lambda x:re.sub("<(.*?)>",'',x or "")),
         ("const",6,
          {
              False:"False",
@@ -43,8 +46,11 @@ class Parameter:
             try:
                 if len(a) == 2:
                     value=self.source_row[a[1]]
-                else:
+                elif len(a)==3 and callable(a[2]):
+                    value=a[2](self.source_row[a[1]])
+                elif len(a)==3 and not callable(a[2]):
                     value=a[2][self.source_row[a[1]]]
+
                 print "read parameter property: "+str(a[0])+" = "+str(value)
                 self.values[a[0]]=value
             except KeyError:

@@ -4,6 +4,7 @@ from dictionary import *
 from diagram import *
 from attribute import *
 from operation import *
+import re
 
 
 class Element:
@@ -11,7 +12,7 @@ class Element:
     PROPERTIES=(
         ("name",3),
         ("stereotype",9),
-        ("note",7),
+        ("note",7,lambda x:re.sub("<(.*?)>",'',x or "")),
         ("abstract",22,
             {
                 '0':"False",
@@ -153,8 +154,11 @@ class Element:
                 try:
                     if len(a) == 2:
                         value=filtered_table[a[1]]
-                    else:
+                    elif len(a)==3 and callable(a[2]):
+                        value=a[2](filtered_table[a[1]])
+                    elif len(a)==3 and not callable(a[2]):
                         value=a[2][filtered_table[a[1]]]
+
                     print "read element property: "+str(a[0])+" = "+str(value)
                     self.values[a[0]]=value
                 except KeyError:
