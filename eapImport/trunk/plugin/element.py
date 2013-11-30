@@ -172,14 +172,14 @@ class Element:
         for a in self.childrens:
             print "write element " + str(a.name)
             new_child=self.reference.create_child_element(self.convertor.get_metamodel().elements[a.type])
-            self.convertor.add_element(a.object_id,new_child)
+            self.convertor.project_elements[a.object_id]=new_child
             a.first_write(new_child,self.convertor)
 
     def _write_diagrams(self):
         for a in self.diagrams:
             print "write diagram " + str(a.name)
             new_diagram=self.reference.create_diagram(self.convertor.get_metamodel().diagrams[a.type])
-            self.convertor.add_diagram(a.diagram_id,new_diagram)
+            self.convertor.project_diagrams[a.diagram_id]=new_diagram
             a.write(new_diagram)
 
     def _write_attributes(self):
@@ -210,8 +210,8 @@ class Element:
         if self.appears:
             for a in self.appears:
                 try:
-                    print "show element "+(self.name or self.type)+" in diagram "+self.convertor.get_project_diagrams()[a].name
-                    self.reference.show_in(self.convertor.get_project_diagrams()[a])
+                    print "show element "+(self.name or self.type)+" in diagram "+self.convertor.project_diagrams[a].name
+                    self.reference.show_in(self.convertor.project_diagrams[a])
                 except KeyError as e:
                     print "Element type "+self.type+" can not display in required diagram"
                     continue
