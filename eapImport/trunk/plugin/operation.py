@@ -2,6 +2,8 @@
 __author__='Michal Petrovič'
 
 from parameter import *
+import re
+
 
 class Operation:
 
@@ -9,7 +11,7 @@ class Operation:
         ("name",2),
         ("stereotype",6),
         ("rtype",4),
-        ("note",9),
+        ("note",9,lambda x:re.sub("<(.*?)>",'',x or "")),
         ("static",7,
             {
                 '0':"False",
@@ -56,7 +58,9 @@ class Operation:
             try:
                 if len(a) == 2:
                     value=filtered_table[a[1]]
-                else:
+                elif len(a)==3 and callable(a[2]):
+                    value=a[2](filtered_table[a[1]])
+                elif len(a)==3 and not callable(a[2]):
                     value=a[2][filtered_table[a[1]]]
 
                 print "read operation property: "+str(a[0])+" = "+str(value)

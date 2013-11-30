@@ -1,11 +1,13 @@
 #coding=utf-8
 __author__='Michal Petrovič'
 
+import re
+
 
 class Diagram:
     PROPERTIES=(
         ("name",4),
-        ("note",8)
+        ("note",8,lambda x:re.sub("<(.*?)>",'',x or "")),
     )
 
     def __init__(self,pa_diagram,pa_parent_package,pa_parent_element,pa_type,pa_name):
@@ -35,7 +37,9 @@ class Diagram:
             try:
                 if len(a) == 2:
                     value=filtered_table[a[1]]
-                else:
+                elif len(a)==3 and callable(a[2]):
+                    value=a[2](filtered_table[a[1]])
+                elif len(a)==3 and not callable(a[2]):
                     value=a[2][filtered_table[a[1]]]
 
                 print "read diagram property: " + str(a[0]) + " = " + str(value)
