@@ -70,10 +70,17 @@ class Convertor:
 
     def _write_connectors(self):
         for connector in self._project_connectors:
+            if connector.source_id not in self._project_elements or connector.dest_id not in self._project_elements:
+                continue
             source=self._project_elements[connector.source_id]
             dest=self._project_elements[connector.dest_id]
 
-            new_connector=source.connect_with(dest,self.get_metamodel().connections[connector.type])
+            try:
+                new_connector=source.connect_with(dest,self.get_metamodel().connections[connector.type])
+            except Exception as e:
+                if "Unknown exception" in e.message:
+                    print "Connector type"+connector.type+" is not supported for "+source.name+" type of element!"
+                    continue
             connector.write(new_connector)
 
             for diagram in source.appears:
