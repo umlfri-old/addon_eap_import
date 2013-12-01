@@ -1,63 +1,66 @@
 #coding=utf-8
-__author__='Michal Petrovič'
+__author__ = 'Michal Petrovič'
 
 import re
 
 
 class Parameter:
 
-    PROPERTIES=(
-        ("name",1),
-        ("default",3),
-        ("note",4,lambda x:re.sub("<(.*?)>",'',x or "")),
-        ("const",6,
+    PROPERTIES = (
+        ("name", 1),
+        ("default", 3),
+        ("note", 4, lambda x: re.sub("<(.*?)>", '', x or "")),
+        ("const", 6,
          {
-             False:"False",
-             True:"True"
+             False: "False",
+             True: "True"
          }
-        ),
-        ("scope",8,
+         ),
+        ("scope", 8,
          {
-             "in":"in",
-             "out":"out",
-             "inout":"in out"
+             "in": "in",
+             "out": "out",
+             "inout": "in out"
          }
-        ),
-        ("type",2)
-
+         ),
+        ("type", 2)
     )
 
-    def __init__(self,pa_operation_id,pa_position):
-        self.operation_id=pa_operation_id
-        self.position=pa_position
-        self.values={}
+    def __init__(self, operation_id, position):
+        self.operation_id = operation_id
+        self.position = position
+        self.values = {}
+        self._source_row = None
+        self.reference = None
+        self.operation_position = None
 
-    def read(self,pa_table_row):
-        self.source_row=pa_table_row
+    def read(self, table_row):
+        self._source_row = table_row
         self._read_properties()
 
-    def write(self,pa_reference,pa_operation_position):
-        self.reference=pa_reference
-        self.operation_position=pa_operation_position
+    def write(self, self_reference, operation_position):
+        self.reference = self_reference
+        self.operation_position = operation_position
         self._write_properties()
 
     def _read_properties(self):
         for a in Parameter.PROPERTIES:
             try:
                 if len(a) == 2:
-                    value=self.source_row[a[1]]
-                elif len(a)==3 and callable(a[2]):
-                    value=a[2](self.source_row[a[1]])
-                elif len(a)==3 and not callable(a[2]):
-                    value=a[2][self.source_row[a[1]]]
+                    value = self._source_row[a[1]]
+                elif len(a) == 3 and callable(a[2]):
+                    value = a[2](self._source_row[a[1]])
+                elif len(a) == 3 and not callable(a[2]):
+                    value = a[2][self._source_row[a[1]]]
 
-                print "read parameter property: "+str(a[0])+" = "+str(value)
-                self.values[a[0]]=value
+                print "read parameter property: " + str(a[0]) + " = " + str(value)
+
+                self.values[a[0]] = value
             except KeyError:
-                print "Value "+str(value)+" for: "+a[0]+" is not supported!"
+                print "Value " + str(value) + " for: " + a[0] + " is not supported!"
                 continue
 
     def _write_properties(self):
         for a in self.values:
-            print "write parameter property: "+a+" = "+(self.values[a] or '')
-            self.reference.values['operations['+str(self.operation_position)+'].parameters['+str(self.position)+'].'+a]=(self.values[a] or '')
+            print "write parameter property: " + a + " = " + (self.values[a] or '')
+            self.reference.values['operations[' + str(self.operation_position) + '].parameters[' + str(self.position) + '].' + a] = (self.values[a] or '')

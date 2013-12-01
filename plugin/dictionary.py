@@ -1,8 +1,10 @@
 #coding=utf-8
-__author__='Michal Petrovič'
+__author__ = 'Michal Petrovič'
+
+
 class Dictionary:
 
-    DIAGRAM_TYPE={
+    DIAGRAM_TYPE = {
         "Use Case": "Use Case diagram",
         "Object": "Object diagram",
         "Logical": "Class diagram",
@@ -10,7 +12,7 @@ class Dictionary:
         "Statechart": "State diagram"
     }
 
-    ELEMENT_TYPE={
+    ELEMENT_TYPE = {
         ("StateNode", 100): "StartState",
         ("StateNode", 3): "StartState",
         ("StateNode", 101): "EndState",
@@ -31,22 +33,22 @@ class Dictionary:
         ("Interface", 0): "Interface",
         ("Boundary", 0): "Boundary",
         ("StateNode", 101): "EndState",
-        ("StateMachine",0):"State",
-        ("StateMachine",8):"State"
+        ("StateMachine", 0): "State",
+        ("StateMachine", 8): "State"
     }
 
-    CONNECTION_TYPE={
-        ("NoteLink",None):"Note Link",
-        ("Realisation",None):"Implementation",
-        ("Generalization",None):"Generalization",
-        ("Dependency",None):"Dependency",
-        ("ControlFlow",None):"Control Flow",
-        ("StateFlow",None):"StateTransition",
-        ("UseCase","Includes"):"Include",
-        ("UseCase","Extends"):"Extend",
-        ("UseCase",None):"AssociationUseCase",
-        #None:"AssociationInstance",
-        ("Association",None):"Association",
-        ("Aggregation","Weak"):"Agregation",
-        ("Aggregation","Strong"):"Compose"
+    CONNECTION_TYPE = {
+        ("NoteLink", None): "Note Link",
+        ("Realisation", None): "Implementation",
+        ("Generalization", None): "Generalization",
+        ("Dependency", None): "Dependency",
+        ("ControlFlow", None): "Control Flow",
+        ("StateFlow", None): "StateTransition",
+        ("UseCase", "Includes"): "Include",
+        ("UseCase", "Extends"): "Extend",
+        ("UseCase", None): "AssociationUseCase",
+        #None: "AssociationInstance",
+        ("Association", None): "Association",
+        ("Aggregation", "Weak"): "Agregation",
+        ("Aggregation", "Strong"): "Compose"
     }
