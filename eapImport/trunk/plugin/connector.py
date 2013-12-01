@@ -1,22 +1,23 @@
 #coding=utf-8
-__author__='Michal Petrovič'
+__author__ = 'Michal Petrovič'
 
 import re
 
 
 class Connector:
-    PROPERTIES=(
+
+    PROPERTIES = (
         ("name", 1),
         ("stereotype", 46),
-        ("note", 3,lambda x:re.sub("<(.*?)>",'',x or "")),
+        ("note", 3, lambda x: re.sub("<(.*?)>", '', x or "")),
         ("direction", 2,
          {
-             "Unspecified":"Unspecified",
-             "Source -> Destination":"Source to Destination",
-             "Destination -> Source":"Destination to Source",
-             "Bi-Directional":"Bidirectional"
+             "Unspecified": "Unspecified",
+             "Source -> Destination": "Source to Destination",
+             "Destination -> Source": "Destination to Source",
+             "Bi-Directional": "Bidirectional"
          }
-        ),
+         ),
         ("SCardinality", 6),
         ("DCardinality", 9),
         ("SRole", 12),
@@ -25,38 +26,41 @@ class Connector:
         ("weight", 51)
     )
 
-    def __init__(self, pa_connector_id, pa_source_id, pa_dest_id, pa_type):
-        self.connector_id=pa_connector_id
-        self.source_id=pa_source_id
-        self.dest_id=pa_dest_id
+    def __init__(self, connector_id, source_id, destination_id, connector_type):
+        self.connector_id = connector_id
+        self.source_id = source_id
+        self.dest_id = destination_id
 
-        self.type=pa_type
-        self.values={}
-        self.appears=[]
+        self.type = connector_type
+        self.values = {}
+        self.appears = []
+        self.stored_tables = None
+        self.reference = None
 
-    def read(self, pa_table_store):
-        self.stored_tables=pa_table_store
+    def read(self, table_store):
+        self.stored_tables = table_store
         self._read_properties()
 
-    def write(self, pa_reference):
-        self.reference=pa_reference
+    def write(self, self_reference):
+        self.reference = self_reference
         self._write_properties()
 
     def _read_properties(self):
-        t_connector=self.stored_tables.get_table("t_connector")
-        filtered_table=filter(lambda a:a[0] == self.connector_id, t_connector)[0]
+        t_connector = self.stored_tables.get_table("t_connector")
+        filtered_table = filter(lambda x: x[0] == self.connector_id, t_connector)[0]
 
         for a in Connector.PROPERTIES:
             try:
                 if len(a) == 2:
-                    value=filtered_table[a[1]]
-                elif len(a)==3 and callable(a[2]):
-                    value=a[2](filtered_table[a[1]])
-                elif len(a)==3 and not callable(a[2]):
-                    value=a[2][filtered_table[a[1]]]
+                    value = filtered_table[a[1]]
+                elif len(a) == 3 and callable(a[2]):
+                    value = a[2](filtered_table[a[1]])
+                elif len(a) == 3 and not callable(a[2]):
+                    value = a[2][filtered_table[a[1]]]
 
                 print "read connector property: " + str(a[0]) + " = " + str(value)
-                self.values[a[0]]=value
+
+                self.values[a[0]] = value
             except KeyError:
                 print "Value " + str(value) + " for: " + a[0] + " is not supported!"
                 continue
@@ -65,7 +69,7 @@ class Connector:
         for a in self.values:
             print "write connector property: " + a + " = " + (str(self.values[a]) or '')
             try:
-                self.reference.values[a]=(self.values[a] or '')
+                self.reference.values[a] = (self.values[a] or '')
             except Exception as e:
                 if "Unknown exception 500: '[\'Invalid attribute" in e.message:
                     print "Connector type: " + self.type + " not suppoort attribute " + a

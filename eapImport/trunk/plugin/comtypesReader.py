@@ -1,70 +1,54 @@
 #coding=utf-8
-__author__='Michal Petrovič'
+__author__ = 'Michal Petrovič'
+
 from comtypes.client import *
 
 
 class ComtypesReader:
-    def __init__(self):
-        self.aCOM_object=CreateObject("DAO.DBEngine.36")
 
+    def __init__(self, file_path):
+        com_object = CreateObject("DAO.DBEngine.36")
+        self.database = com_object.OpenDatabase(file_path)
 
-    def connect_db(self, paPath):
-        """
-        Pripojí sa k zadanému súboru
-        """
-        self.aDB=self.aCOM_object.OpenDatabase(paPath)
-
-    def get_one_item(self, paTable, paColumn, paCondition):
-        num_rows=self.get_num_rows(paTable, paCondition)
-        if (num_rows != 0):
-            rs=self.aDB.OpenRecordset(
-                "SELECT " + paColumn + " FROM " + paTable + " WHERE " + paCondition)
+    def get_item(self, table_name, column_name, conditions):
+        num_rows = self.get_num_rows(table_name, conditions)
+        if num_rows != 0:
+            rs = self.database.OpenRecordset("SELECT " + column_name + " FROM " + table_name + " WHERE " + conditions)
             return rs.Fields(0).Value
         else:
             return None
 
-    def get_items(self, paTable, paColumn, paCondition):
-        num_rows=self.get_num_rows(paTable, paCondition)
+    def get_items(self, table_name, columns, conditions):
+        num_rows = self.get_num_rows(table_name, conditions)
 
-        rs=self.aDB.OpenRecordset(
-            "SELECT " + paColumn + " FROM " + paTable + " WHERE " + paCondition)
-        num_col=rs.Fields.Count
-        table=[[None for e in range(num_col)] for f in range(num_rows)]
+        rs = self.database.OpenRecordset("SELECT " + columns + " FROM " + table_name + " WHERE " + conditions)
+        num_col = rs.Fields.Count
+        table = [[None for _ in range(num_col)] for _ in range(num_rows)]
 
         for a in range(num_rows):
             for b in range(num_col):
-                table[a][b]=rs.Fields(b).Value
+                table[a][b] = rs.Fields(b).Value
             rs.MoveNext()
 
         return table
 
-
-    def get_num_rows(self, paTable, paConditions=None):
-        if paConditions == None:
-            rs=self.aDB.OpenRecordset("SELECT COUNT(*) FROM " + paTable)
+    def get_num_rows(self, table_name, conditions=None):
+        if conditions is None:
+            rs = self.database.OpenRecordset("SELECT COUNT(*) FROM " + table_name)
             return rs.Fields(0).Value
         else:
-            rs=self.aDB.OpenRecordset(
-                "SELECT COUNT(*) FROM " + paTable + " WHERE " + paConditions)
+            rs = self.database.OpenRecordset("SELECT COUNT(*) FROM " + table_name + " WHERE " + conditions)
             return rs.Fields(0).Value
 
-    def get_table(self, paTable):
-        rs=self.aDB.OpenRecordset("SELECT * FROM " + paTable)
-        x=self.get_num_rows(paTable)
-        y=rs.Fields.Count
-        table=[[None for e in range(y)] for f in range(x)]
+    def get_table(self, table_name):
+        rs = self.database.OpenRecordset("SELECT * FROM " + table_name)
+        x = self.get_num_rows(table_name)
+        y = rs.Fields.Count
+        table = [[None for _ in range(y)] for _ in range(x)]
 
         for a in range(x):
             for b in range(y):
-                table[a][b]=rs.Fields(b).Value
+                table[a][b] = rs.Fields(b).Value
             rs.MoveNext()
 
         return table
-
-    def choose(self, paList, paName):
-        for x in paList:
-            if x.name == paName:
-                return x
-
-
-
