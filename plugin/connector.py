@@ -58,16 +58,16 @@ class Connector:
                 elif len(a) == 3 and not callable(a[2]):
                     value = a[2][filtered_table[a[1]]]
 
-                print "read connector property: " + str(a[0]) + " = " + str(value)
+                print "read connector property: " + unicode(a[0]) + " = " + unicode(value)
 
                 self.values[a[0]] = value
             except KeyError:
-                print "Value " + str(value) + " for: " + a[0] + " is not supported!"
+                print "Value " + unicode(value) + " for: " + a[0] + " is not supported!"
                 continue
 
     def _write_properties(self):
         for a in self.values:
-            print "write connector property: " + a + " = " + (str(self.values[a]) or '')
+            print "write connector property: " + a + " = " + (unicode(self.values[a]) or '')
             try:
                 self.reference.values[a] = (self.values[a] or '')
             except Exception as e:
