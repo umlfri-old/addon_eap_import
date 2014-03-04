@@ -58,13 +58,13 @@ class Attribute:
                 elif len(a) == 3 and not callable(a[2]):
                     value = a[2][filtered_table[a[1]]]
 
-                print "read atribute property: " + str(a[0]) + " = " + str(value)
+                print "read atribute property: " + unicode(a[0]) + " = " + unicode(value)
                 self.values[a[0]] = value
             except KeyError:
-                print "Value " + str(value) + " for: " + a[0] + " is not supported!"
+                print "Value " + unicode(value) + " for: " + a[0] + " is not supported!"
                 continue
 
     def _write_properties(self):
         for a in self.values:
             print "write attribute property:" + a + " = " + (self.values[a] or '')
-            self.reference.values['attributes[' + str(self.position) + '].' + a] = (self.values[a] or '')
+            self.reference.values['attributes[' + unicode(self.position) + '].' + a] = (self.values[a] or '')

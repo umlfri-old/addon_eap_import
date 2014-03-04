@@ -79,7 +79,9 @@ class Convertor:
                 new_connector = source.connect_with(dest, self.get_metamodel().connections[connector.type])
             except Exception as e:
                 if "Unknown exception" in e.message:
-                    print "Connector type" + connector.type + " is not supported for " + source.name + " type of element!"
+                    print "Connector type" + connector.type + " is not supported for " + \
+                          source.name + '(' + source.type.name + ')' + \
+                          " or " + dest.name + '(' + dest.type.name + ") type of element!"
                     continue
             connector.write(new_connector)
 

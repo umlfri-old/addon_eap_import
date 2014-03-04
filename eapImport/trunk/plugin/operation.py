@@ -65,10 +65,10 @@ class Operation:
                 elif len(a) == 3 and not callable(a[2]):
                     value = a[2][filtered_table[a[1]]]
 
-                print "read operation property: " + str(a[0]) + " = " + str(value)
+                print "read operation property: " + unicode(a[0]) + " = " + unicode(value)
                 self.values[a[0]] = value
             except KeyError:
-                print "Value " + str(value) + "  for: " + a[0] + " is not supported!"
+                print "Value " + unicode(value) + "  for: " + a[0] + " is not supported!"
                 continue
 
     def _read_parameters(self):
@@ -86,10 +86,10 @@ class Operation:
     def _write_properties(self):
         for a in self.values:
             print "write operation property: " + a + " = " + (self.values[a] or '')
-            self.reference.values['operations[' + str(self.position) + '].' + a] = (self.values[a] or '')
+            self.reference.values['operations[' + unicode(self.position) + '].' + a] = (self.values[a] or '')
 
     def _write_parameters(self):
         for a in self.parameters:
             print "write operation parameter: " + a.values['name']
-            self.reference.append_item('operations[' + str(self.position) + '].parameters[' + str(a.position) + ']')
+            self.reference.append_item('operations[' + unicode(self.position) + '].parameters[' + unicode(a.position) + ']')
             a.write(self.reference,self.position)

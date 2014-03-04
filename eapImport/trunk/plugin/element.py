@@ -78,7 +78,7 @@ class Element:
             filtered_table = filter(lambda x: ((x[24] is not None) and (x[1] == 'Package') and (x[8] == self.package_id)), t_object)
 
             for a in filtered_table:
-                print "read package " + str(a[3])
+                print "read package " + unicode(a[3])
                 new_package = Element(int(a[24]), a[8], a[0], Dictionary.ELEMENT_TYPE[(a[1], int(a[10]))], a[3])
                 new_package.read(self.stored_tables)
                 self.childrens.append(new_package)
@@ -93,7 +93,7 @@ class Element:
                 lambda a: ((a[2] == self.object_id)), t_diagram)
 
         for row in filtered_table:
-            print "read diagram " + str(row[4])
+            print "read diagram " + unicode(row[4])
             try:
                 new_diagram = Diagram(row[0], row[1], row[2], Dictionary.DIAGRAM_TYPE[row[3]], row[4])
             except KeyError:
@@ -111,7 +111,7 @@ class Element:
 
         for a in filtered_table:
             try:
-                print 'read object ' + str(a[3])
+                print 'read object ' + unicode(a[3])
                 new_object = Element(object_id=a[0],
                                      parent_id=a[43],
                                      name=a[3],
@@ -130,7 +130,7 @@ class Element:
 
             for row in sorted_table:
                 print "read attribute " + row[1]
-                new_attribute = Attribute(row[14], row[0], row[15])
+                new_attribute = Attribute(row[14], row[0], len(self.atributes))
                 new_attribute.read(self.stored_tables)
                 self.atributes.append(new_attribute)
 
@@ -142,7 +142,7 @@ class Element:
 
             for row in sorted_table:
                 print "read operation " + row[2]
-                new_operation = Operation(row[0], row[1], row[14])
+                new_operation = Operation(row[0], row[1], len(self.operations))
                 new_operation.read(self.stored_tables)
                 self.operations.append(new_operation)
 
@@ -160,10 +160,10 @@ class Element:
                     elif len(a) == 3 and not callable(a[2]):
                         value = a[2][filtered_table[a[1]]]
 
-                    print "read element property: " + str(a[0]) + " = " + str(value)
+                    print "read element property: " + unicode(a[0]) + " = " + unicode(value)
                     self.values[a[0]] = value
                 except KeyError:
-                    print "Value " + str(value) + " for: " + a[0] + " is not supported!"
+                    print "Value " + unicode(value) + " for: " + a[0] + " is not supported!"
                     continue
 
     def _read_appearance_in_diagram(self):
@@ -175,28 +175,28 @@ class Element:
 
     def _write_children(self):
         for a in self.childrens:
-            print "write element " + str(a.name)
+            print "write element " + unicode(a.name)
             new_child = self.reference.create_child_element(self.convertor.get_metamodel().elements[a.type])
             self.convertor.project_elements[a.object_id] = new_child
             a.first_write(new_child, self.convertor)
 
     def _write_diagrams(self):
         for a in self.diagrams:
-            print "write diagram " + str(a.name)
+            print "write diagram " + unicode(a.name)
             new_diagram = self.reference.create_diagram(self.convertor.get_metamodel().diagrams[a.type])
             self.convertor.project_diagrams[a.diagram_id] = new_diagram
             a.write(new_diagram)
 
     def _write_attributes(self):
         for a in self.atributes:
-            print "write attribute no. " + str(a.position)
-            self.reference.append_item('attributes[' + str(a.position) + ']')
+            print "write attribute no. " + unicode(a.position)
+            self.reference.append_item('attributes[' + unicode(a.position) + ']')
             a.write(self.reference)
 
     def _write_operations(self):
         for a in self.operations:
-            print "write operation no. " + str(a.position)
-            self.reference.append_item('operations[' + str(a.position) + ']')
+            print "write operation no. " + unicode(a.position)
+            self.reference.append_item('operations[' + unicode(a.position) + ']')
             a.write(self.reference)
 
     def _write_properties(self):
