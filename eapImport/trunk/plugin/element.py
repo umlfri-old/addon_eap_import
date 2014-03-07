@@ -1,11 +1,13 @@
 #coding=utf-8
 __author__ = 'Michal Petrovič'
 
+import convertor
 from dictionary import *
 from diagram import *
 from attribute import *
 from operation import *
 import re
+import logging
 
 
 class Element:
@@ -48,6 +50,8 @@ class Element:
         self.parent_package_id = parent_id
         self.object_id = object_id
 
+        self._logger = logging.getLogger(convertor.Convertor.LOGGER_NAME)
+
     def read(self, table_store):
         self.stored_tables = table_store
 
@@ -78,7 +82,7 @@ class Element:
             filtered_table = filter(lambda x: ((x[24] is not None) and (x[1] == 'Package') and (x[8] == self.package_id)), t_object)
 
             for a in filtered_table:
-                print "read package " + unicode(a[3])
+                self._logger.debug("read package " + unicode(a[3]))
                 new_package = Element(int(a[24]), a[8], a[0], Dictionary.ELEMENT_TYPE[(a[1], int(a[10]))], a[3])
                 new_package.read(self.stored_tables)
                 self.childrens.append(new_package)
@@ -93,7 +97,7 @@ class Element:
                 lambda a: ((a[2] == self.object_id)), t_diagram)
 
         for row in filtered_table:
-            print "read diagram " + unicode(row[4])
+            self._logger.debug("read diagram " + unicode(row[4]))
             try:
                 new_diagram = Diagram(row[0], row[1], row[2], Dictionary.DIAGRAM_TYPE[row[3]], row[4])
             except KeyError:
@@ -111,7 +115,7 @@ class Element:
 
         for a in filtered_table:
             try:
-                print 'read object ' + unicode(a[3])
+                self._logger.debug('read object ' + unicode(a[3]))
                 new_object = Element(object_id=a[0],
                                      parent_id=a[43],
                                      name=a[3],
@@ -129,7 +133,7 @@ class Element:
             sorted_table = sorted(filtered_table, key=lambda x: x[15])
 
             for row in sorted_table:
-                print "read attribute " + row[1]
+                self._logger.debug("read attribute " + row[1])
                 new_attribute = Attribute(row[14], row[0], len(self.atributes))
                 new_attribute.read(self.stored_tables)
                 self.atributes.append(new_attribute)
@@ -141,7 +145,7 @@ class Element:
             sorted_table = sorted(filtered_table, key=lambda x: x[14])
 
             for row in sorted_table:
-                print "read operation " + row[2]
+                self._logger.debug("read operation " + row[2])
                 new_operation = Operation(row[0], row[1], len(self.operations))
                 new_operation.read(self.stored_tables)
                 self.operations.append(new_operation)
@@ -160,10 +164,10 @@ class Element:
                     elif len(a) == 3 and not callable(a[2]):
                         value = a[2][filtered_table[a[1]]]
 
-                    print "read element property: " + unicode(a[0]) + " = " + unicode(value)
+                    self._logger.debug("read element property: " + unicode(a[0]) + " = " + unicode(value))
                     self.values[a[0]] = value
                 except KeyError:
-                    print "Value " + unicode(value) + " for: " + a[0] + " is not supported!"
+                    self._logger.warning("Value " + unicode(value) + " for: " + a[0] + " is not supported!")
                     continue
 
     def _read_appearance_in_diagram(self):
@@ -175,38 +179,38 @@ class Element:
 
     def _write_children(self):
         for a in self.childrens:
-            print "write element " + unicode(a.name)
+            self._logger.debug("write element " + unicode(a.name))
             new_child = self.reference.create_child_element(self.convertor.get_metamodel().elements[a.type])
             self.convertor.project_elements[a.object_id] = new_child
             a.first_write(new_child, self.convertor)
 
     def _write_diagrams(self):
         for a in self.diagrams:
-            print "write diagram " + unicode(a.name)
+            self._logger.debug("write diagram " + unicode(a.name))
             new_diagram = self.reference.create_diagram(self.convertor.get_metamodel().diagrams[a.type])
             self.convertor.project_diagrams[a.diagram_id] = new_diagram
             a.write(new_diagram)
 
     def _write_attributes(self):
         for a in self.atributes:
-            print "write attribute no. " + unicode(a.position)
+            self._logger.debug("write attribute no. " + unicode(a.position))
             self.reference.append_item('attributes[' + unicode(a.position) + ']')
             a.write(self.reference)
 
     def _write_operations(self):
         for a in self.operations:
-            print "write operation no. " + unicode(a.position)
+            self._logger.debug("write operation no. " + unicode(a.position))
             self.reference.append_item('operations[' + unicode(a.position) + ']')
             a.write(self.reference)
 
     def _write_properties(self):
         for a in self.values:
             try:
-                print "write element property: " + a + " = " + (self.values[a] or '')
+                self._logger.debug("write element property: " + a + " = " + (self.values[a] or ''))
                 self.reference.values[a] = (self.values[a] or '')
             except Exception as e:
                 if "Invalid attribute" in e.message:
-                    print "Element type: " + self.type + " do not support property " + a
+                    self._logger.warning("Element type: " + self.type + " do not support property " + a)
                     continue
                 else:
                     raise
@@ -215,10 +219,10 @@ class Element:
         if self.appears:
             for a in self.appears:
                 try:
-                    print "show element " + (self.name or self.type) + " in diagram " + self.convertor.project_diagrams[a].name
+                    self._logger.debug("show element " + (self.name or self.type) + " in diagram " + self.convertor.project_diagrams[a].name)
                     self.reference.show_in(self.convertor.project_diagrams[a])
                 except KeyError as _:
-                    print "Element type " + self.type + " can not display in required diagram"
+                    self._logger.warning("Element type " + self.type + " can not display in required diagram")
                     continue
 
         for a in self.childrens:

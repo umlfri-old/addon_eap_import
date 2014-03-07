@@ -4,9 +4,13 @@ __author__ = 'Michal Petrovič'
 from element import *
 from tableStore import *
 from connector import *
+import logging
+import sys
 
 
 class Convertor:
+
+    LOGGER_NAME = "eapImport"
 
     def __init__(self, adapter, file_path):
         self.adapter = adapter
@@ -17,16 +21,33 @@ class Convertor:
         self.project_connectors = []
         self.root = None
 
+        self._logger = None
+
+        self._logger_init()
+
+        self._logger.info("START IMPORTING")
+
         self.read()
         if adapter is not None:
             self.write()
+
+        self._logger.info("IMPORTING FINISHED")
 
     def _choose(self, sequence, name):
         for x in sequence:
             if x.name == name:
                 return x
 
+    def _logger_init(self):
+        formater = logging.Formatter('%(levelname)s: %(message)s')
+        handler = logging.StreamHandler(sys.stderr)
+        handler.setFormatter(formater)
+        self._logger = logging.getLogger(Convertor.LOGGER_NAME)
+        self._logger.setLevel(level=logging.ERROR)
+        self._logger.addHandler(handler)
+
     def read(self):
+        self._logger.info("START READING")
         t_package = self.stored_tables.get_table('t_package')
         sorted_table = sorted(t_package, key=lambda x: x[2])
 
@@ -41,6 +62,7 @@ class Convertor:
 
         self.root.read(self.stored_tables)
         self._read_connectors()
+        self._logger.info("END READING")
 
     def _read_connectors(self):
         t_connector = self.stored_tables.get_table("t_connector")
@@ -51,7 +73,7 @@ class Convertor:
                 new_connector.read(self.stored_tables)
                 self.project_connectors.append(new_connector)
             except KeyError:
-                print "Connection type: (" + row[4] + ", " + (row[5]or "None") + ") is not supported!"
+                self._logger.warning("Connection type: (" + row[4] + ", " + (row[5]or "None") + ") is not supported!")
                 continue
 
     '''
@@ -61,12 +83,14 @@ class Convertor:
     '''
 
     def write(self):
+        self._logger.info("START WRITE")
         self._choose(self.adapter.templates, "Empty UML diagram").create_new_project()
         self.adapter.project.root.values["name"] = self.root.name
 
         self.root.first_write(self.adapter.project.root, self)
         self.root.second_write()
         self._write_connectors()
+        self._logger.info("END WRITE")
 
     def _write_connectors(self):
         for connector in self.project_connectors:
@@ -79,9 +103,9 @@ class Convertor:
                 new_connector = source.connect_with(dest, self.get_metamodel().connections[connector.type])
             except Exception as e:
                 if "Unknown exception" in e.message:
-                    print "Connector type" + connector.type + " is not supported for " + \
-                          source.name + '(' + source.type.name + ')' + \
-                          " or " + dest.name + '(' + dest.type.name + ") type of element!"
+                    self._logger.warning("Connector type" + connector.type + " is not supported for " +
+                                         source.name + '(' + source.type.name + ')' +
+                                         " or " + dest.name + '(' + dest.type.name + ") type of element!")
                     continue
             connector.write(new_connector)
 
