@@ -3,6 +3,8 @@ __author__ = 'Michal Petrovič'
 
 from parameter import *
 import re
+import logging
+import convertor
 
 
 class Operation:
@@ -42,6 +44,8 @@ class Operation:
         self.stored_tables = None
         self.reference = None
 
+        self._logger = logging.getLogger(convertor.Convertor.LOGGER_NAME)
+
     def read(self, table_store):
         self.stored_tables = table_store
         self._read_properties()
@@ -65,10 +69,10 @@ class Operation:
                 elif len(a) == 3 and not callable(a[2]):
                     value = a[2][filtered_table[a[1]]]
 
-                print "read operation property: " + unicode(a[0]) + " = " + unicode(value)
+                self._logger.debug("read operation property: " + unicode(a[0]) + " = " + unicode(value))
                 self.values[a[0]] = value
             except KeyError:
-                print "Value " + unicode(value) + "  for: " + a[0] + " is not supported!"
+                self._logger.warning("Value " + unicode(value) + "  for: " + a[0] + " is not supported!")
                 continue
 
     def _read_parameters(self):
@@ -78,18 +82,18 @@ class Operation:
 
         if len(sorted_table) != 0:
             for row in sorted_table:
-                print "read operation parameter: " + row[1]
+                self._logger.debug("read operation parameter: " + row[1])
                 new_parameter = Parameter(self.operation_id, row[5])
                 new_parameter.read(row)
                 self.parameters.append(new_parameter)
 
     def _write_properties(self):
         for a in self.values:
-            print "write operation property: " + a + " = " + (self.values[a] or '')
+            self._logger.debug("write operation property: " + a + " = " + (self.values[a] or ''))
             self.reference.values['operations[' + unicode(self.position) + '].' + a] = (self.values[a] or '')
 
     def _write_parameters(self):
         for a in self.parameters:
-            print "write operation parameter: " + a.values['name']
+            self._logger.debug("write operation parameter: " + a.values['name'])
             self.reference.append_item('operations[' + unicode(self.position) + '].parameters[' + unicode(a.position) + ']')
             a.write(self.reference,self.position)

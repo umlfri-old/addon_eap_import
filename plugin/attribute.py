@@ -2,6 +2,8 @@
 __author__ = 'Michal Petrovič'
 
 import re
+import logging
+import convertor
 
 
 class Attribute:
@@ -37,6 +39,8 @@ class Attribute:
         self.stored_tables = None
         self.reference = None
 
+        self._logger = logging.getLogger(convertor.Convertor.LOGGER_NAME)
+
     def read(self, table_store):
         self.stored_tables = table_store
         self._read_properties()
@@ -58,13 +62,13 @@ class Attribute:
                 elif len(a) == 3 and not callable(a[2]):
                     value = a[2][filtered_table[a[1]]]
 
-                print "read atribute property: " + unicode(a[0]) + " = " + unicode(value)
+                self._logger.debug("read atribute property: " + unicode(a[0]) + " = " + unicode(value))
                 self.values[a[0]] = value
             except KeyError:
-                print "Value " + unicode(value) + " for: " + a[0] + " is not supported!"
+                self._logger.warning("Value " + unicode(value) + " for: " + a[0] + " is not supported!")
                 continue
 
     def _write_properties(self):
         for a in self.values:
-            print "write attribute property:" + a + " = " + (self.values[a] or '')
+            self._logger.debug("write attribute property:" + a + " = " + (self.values[a] or ''))
             self.reference.values['attributes[' + unicode(self.position) + '].' + a] = (self.values[a] or '')

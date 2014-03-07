@@ -2,6 +2,8 @@
 __author__ = 'Michal Petrovič'
 
 import re
+import logging
+import convertor
 
 
 class Diagram:
@@ -24,6 +26,8 @@ class Diagram:
         self.parent_package_id = pa_parent_package
         self.parent_id = pa_parent_element
 
+        self._logger = logging.getLogger(convertor.Convertor.LOGGER_NAME)
+
     def read(self, pa_table_store):
         self.stored_tables = pa_table_store
         self._read_properties()
@@ -45,13 +49,13 @@ class Diagram:
                 elif len(a) == 3 and not callable(a[2]):
                     value = a[2][filtered_table[a[1]]]
 
-                print "read diagram property: " + unicode(a[0]) + " = " + unicode(value)
+                self._logger.debug("read diagram property: " + unicode(a[0]) + " = " + unicode(value))
                 self.values[a[0]] = value
             except KeyError:
-                print "Value " + unicode(value) + " for: " + a[0] + " is not supported!"
+                self._logger.warning("Value " + unicode(value) + " for: " + a[0] + " is not supported!")
                 continue
 
     def _write_properties(self):
         for a in self.values:
-            print "write diagram property: " + a + " = " + (unicode(self.values[a]) or '')
+            self._logger.debug("write diagram property: " + a + " = " + (unicode(self.values[a]) or ''))
             self.reference.values[a] = (self.values[a] or '')
